@@ -1,0 +1,40 @@
+﻿@model ToDoList.Models.Entities.TaskItem
+
+@{
+    ViewData["Title"] = "Редактировать задачу";
+}
+
+<div class="card shadow-lg rounded p-4">
+    <h2 class="card-title">Редактировать задачу</h2>
+    <form asp-action="Edit" method="post" class="mt-4">
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label">Название</label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Описание</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="EndDate" class="form-label">Дата завершения</label>
+            <input asp-for="EndDate" type="date" class="form-control" />
+            <span asp-validation-for="EndDate" class="text-danger"></span>
+        </div>
+        <div class="mb-3">
+            <label asp-for="IsCompleted" class="form-check-label">
+                <input asp-for="IsCompleted" type="checkbox" class="form-check-input" />
+                Выполнено
+            </label>
+        </div>
+        <button type="submit" class="btn btn-outline-primary me-2" style="max-width: 200px; width: 100%;">Сохранить</button>
+        <a asp-action="Index" class="btn btn-outline-secondary" style="max-width: 200px; width: 100%;">Назад</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

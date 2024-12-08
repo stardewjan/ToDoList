@@ -1,0 +1,29 @@
+﻿@model IEnumerable<ToDoList.Models.Entities.TaskItem>
+
+@{
+    ViewData["Title"] = "Список задач";
+}
+
+<h1 class="mb-4">Список задач</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-primary me-2">Создать новую задачу</a>
+</p>
+
+<div class="list-group">
+    @foreach (var item in Model)
+    {
+        <a asp-action="Details" asp-route-id="@item.Id" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center shadow-sm mb-2 p-3 rounded" style="transition: transform 0.2s, box-shadow 0.2s;">
+            <div>
+                <h5 class="mb-1">@item.Title</h5>
+                <p class="mb-0 text-muted">@item.Description</p>
+            </div>
+            <div class="text-end">
+                <small class="text-muted">@item.EndDate.ToString("dd.MM.yyyy")</small>
+                <span class="badge @((item.IsCompleted ? "bg-success" : "bg-warning")) ms-2">
+                    @(item.IsCompleted ? "Выполнено" : "Не выполнено")
+                </span>
+            </div>
+        </a>
+    }
+</div>

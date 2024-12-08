@@ -1,0 +1,26 @@
+﻿@model ToDoList.Models.Entities.TaskItem
+
+@{
+    ViewData["Title"] = "Детали задачи";
+}
+
+<div class="card shadow-lg rounded p-4">
+    <h2 class="card-title">@Model.Title</h2>
+    <p class="card-text">
+        <strong>Описание:</strong> @Model.Description
+    </p>
+    <p class="card-text">
+        <strong>Дата завершения:</strong> @Model.EndDate.ToString("dd.MM.yyyy")
+    </p>
+    <p class="card-text">
+        <strong>Статус:</strong>
+        <span class="badge @((Model.IsCompleted ? "bg-success" : "bg-warning"))">
+            @(Model.IsCompleted ? "Выполнено" : "Не выполнено")
+        </span>
+    </p>
+    <div class="mt-4">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary me-2" style="max-width: 200px; width: 100%;">Редактировать</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger" style="max-width: 200px; width: 100%;">Удалить</a>
+        <a asp-action="Index" class="btn btn-outline-secondary" style="max-width: 200px; width: 100%;">Назад</a>
+    </div>
+</div>

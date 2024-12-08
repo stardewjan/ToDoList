@@ -1,0 +1,31 @@
+﻿@model ToDoList.Models.Entities.TaskItem
+
+@{
+    ViewData["Title"] = "Удалить";
+}
+
+<h3>Вы уверены, что хотите удалить эту задачу?</h3>
+
+<div>
+    <p class="card-text">
+        <strong>Название:</strong> @Model.Title
+    </p>
+    <p class="card-text">
+        <strong>Описание:</strong> @Model.Description
+    </p>
+    <p class="card-text">
+        <strong>Дата завершения:</strong> @Model.EndDate.ToString("dd.MM.yyyy")
+    </p>
+    <p class="card-text">
+        <strong>Статус:</strong>
+        <span class="badge @((Model.IsCompleted ? "bg-success" : "bg-warning"))">
+            @(Model.IsCompleted ? "Выполнено" : "Не выполнено")
+        </span>
+    </p>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Да, удалить" class="btn btn-outline-danger" style="max-width: 200px; width: 100%;" />
+        <a asp-action="Index" class="btn btn-outline-secondary" style="max-width: 200px; width: 100%;">Назад</a>
+    </form>
+</div>

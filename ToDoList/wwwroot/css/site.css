@@ -20,3 +20,25 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/*stardew((*/
+
+.list-group-item {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .list-group-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+/*stardew))*/
