@@ -127,23 +127,24 @@ namespace ToDoList.Tests.Controllers
             context.TaskItems.Add(task);
             await context.SaveChangesAsync();
 
-            var updatedTask = new TaskItem
-            {
-                Id = task.Id, // Обновляем ту же задачу
-                Title = "Updated Task",
-                Description = "Updated Description",
-                EndDate = DateTime.Now.AddDays(3),
-                IsCompleted = true
-            };
+            // Извлекаем задачу из базы данных
             var controller = new TaskItemsApiController(context);
+            var taskToUpdate = await context.TaskItems.FirstAsync();
+
+            // Изменяем свойства
+            taskToUpdate.Title = "Updated Task";
+            taskToUpdate.Description = "Updated Description";
+            taskToUpdate.EndDate = DateTime.Now.AddDays(3);
+            taskToUpdate.IsCompleted = true;
 
             // Act
-            var result = await controller.UpdateTaskItem(task.Id, updatedTask);
+            var result = await controller.UpdateTaskItem(taskToUpdate.Id, taskToUpdate);
 
             // Assert
             Assert.IsType<NoContentResult>(result);
-            var dbTask = await context.TaskItems.FindAsync(task.Id);
-            Assert.Equal(updatedTask.Title, dbTask.Title);
+            var dbTask = await context.TaskItems.FindAsync(taskToUpdate.Id);
+            Assert.Equal("Updated Task", dbTask.Title);
+            Assert.True(dbTask.IsCompleted);
         }
 
         [Fact]
