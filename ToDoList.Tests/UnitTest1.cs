@@ -1,4 +1,4 @@
-﻿namespace ToDoList.Tests;
+namespace ToDoList.Tests;
 
 public class UnitTest1
 {
