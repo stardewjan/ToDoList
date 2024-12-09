@@ -20,9 +20,9 @@ jobs:
 
     # 3. Сборка Docker-образа
     - name: Build Docker image
-      run: docker build -t todo-list-app:latest .
+      run: docker build -t todo-list-app:latest ./ToDoList
 
     # 4. Запуск контейнера для тестов
     - name: Run tests in Docker
       run: |
-        docker run --rm todo-list-app:latest dotnet test ./ToDoList.Tests/ToDoList.Tests.csproj --logger "console;verbosity=detailed"
+        docker run --rm todo-list-app:latest dotnet test /app/ToDoList.Tests/ToDoList.Tests.csproj --logger "console;verbosity=detailed"
