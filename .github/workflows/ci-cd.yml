@@ -3,31 +3,26 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # Запускается при пуше в ветку main
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Скачиваем код
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # Устанавливаем .NET Core
-      - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '8.0'
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '6.0.x'
 
-      # Восстанавливаем зависимости
-      - name: Restore dependencies
-        run: dotnet restore
+    - name: Restore dependencies
+      run: dotnet restore ./ToDoList/ToDoList.sln
 
-      # Собираем проект
-      - name: Build project
-        run: dotnet build --configuration Release
+    - name: Build project
+      run: dotnet build ./ToDoList/ToDoList.sln --no-restore --configuration Release
 
-      # Запускаем тесты
-      - name: Run tests
-        run: dotnet test
+    - name: Run tests
+      run: dotnet test ./ToDoList/ToDoList.sln --no-build --verbosity normal
