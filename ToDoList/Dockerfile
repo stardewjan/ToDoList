@@ -1,29 +1,28 @@
-# См. статью по ссылке https://aka.ms/customizecontainer, чтобы узнать как настроить контейнер отладки и как Visual Studio использует этот Dockerfile для создания образов для ускорения отладки.
-
-# Этот этап используется при запуске из VS в быстром режиме (по умолчанию для конфигурации отладки)
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-
-
-# Этот этап используется для сборки проекта службы
+# Базовый образ для .NET
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ToDoList.csproj", "."]
+
+# Копирование проектных файлов
+COPY ["ToDoList.csproj", "./"]
+COPY ["../ToDoList.Tests/ToDoList.Tests.csproj", "../ToDoList.Tests/"]
+
+# Восстановление зависимостей
 RUN dotnet restore "./ToDoList.csproj"
+RUN dotnet restore "../ToDoList.Tests/ToDoList.Tests.csproj"
+
+# Копирование всего кода
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "./ToDoList.csproj" -c $BUILD_CONFIGURATION -o /app/build
+COPY ../ToDoList.Tests/ ../ToDoList.Tests/
 
-# Этот этап используется для публикации проекта службы, который будет скопирован на последний этап
+# Сборка проекта
+RUN dotnet build "ToDoList.csproj" -c Release -o /app/build
+
+# Публикация проекта
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./ToDoList.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "ToDoList.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
-FROM base AS final
+# Финальный образ
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "ToDoList.dll"]
