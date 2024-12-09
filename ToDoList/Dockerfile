@@ -1,29 +1,32 @@
-# См. статью по ссылке https://aka.ms/customizecontainer, чтобы узнать как настроить контейнер отладки и как Visual Studio использует этот Dockerfile для создания образов для ускорения отладки.
-
-# Этот этап используется при запуске из VS в быстром режиме (по умолчанию для конфигурации отладки)
+# Базовый образ для выполнения приложения
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
 WORKDIR /app
 EXPOSE 8080
 
-
-# Этот этап используется для сборки проекта службы
+# Этап сборки проекта
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ToDoList.csproj", "."]
-RUN dotnet restore "./ToDoList.csproj"
+
+# Копируем файлы решения
+COPY ["ToDoList/ToDoList.sln", "ToDoList/"]
+COPY ["ToDoList/ToDoList.csproj", "ToDoList/"]
+COPY ["ToDoList.Tests/ToDoList.Tests.csproj", "ToDoList.Tests/"]
+
+# Восстанавливаем зависимости
+RUN dotnet restore "ToDoList/ToDoList.sln"
+
+# Копируем оставшиеся файлы и выполняем сборку
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "./ToDoList.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/ToDoList"
+RUN dotnet build -c Release -o /app/build
 
-# Этот этап используется для публикации проекта службы, который будет скопирован на последний этап
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./ToDoList.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# Этап тестирования
+FROM build AS test
+WORKDIR /src/ToDoList.Tests
+RUN dotnet test --no-build --logger "console;verbosity=detailed"
 
-# Этот этап используется в рабочей среде или при запуске из VS в обычном режиме (по умолчанию, когда конфигурация отладки не используется)
+# Финальный этап для запуска приложения
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/build .
 ENTRYPOINT ["dotnet", "ToDoList.dll"]
