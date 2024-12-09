@@ -6,32 +6,23 @@ on:
       - main
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    # Проверка исходного кода
+    # 1. Проверка исходного кода
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Установка .NET SDK версии 8
-    - name: Setup .NET 8 SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'  
+    # 2. Установка Docker CLI
+    - name: Setup Docker
+      uses: docker/setup-buildx-action@v2
 
-    # Восстановление зависимостей
-    - name: Restore dependencies
-      run: dotnet restore ./ToDoList/ToDoList.sln
+    # 3. Сборка Docker-образа
+    - name: Build Docker image
+      run: docker build -t todo-list-app:latest .
 
-    # Сборка проекта
-    - name: Build project
-      run: dotnet build ./ToDoList/ToDoList.sln --no-restore --configuration Debug
-
-    # Проверка содержимого тестовой папки
-    - name: Verify test build output
-      run: ls -R ./ToDoList.Tests/bin/Debug/net8.0
-
-    # Запуск тестов
-    - name: Run tests
-      run: dotnet test ./ToDoList.Tests/ToDoList.Tests.csproj --no-build --logger "console;verbosity=detailed"
+    # 4. Запуск контейнера для тестов
+    - name: Run tests in Docker
+      run: |
+        docker run --rm todo-list-app:latest dotnet test ./ToDoList.Tests/ToDoList.Tests.csproj --logger "console;verbosity=detailed"
