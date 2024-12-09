@@ -4,27 +4,26 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
-  test-and-build:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    # Checkout исходного кода
+    # Проверка исходного кода
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # Установка .NET SDK версии 8 (для использования в тестах)
+    - name: Setup .NET 8 SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '8.0.x'
+
     # Сборка Docker-образа
     - name: Build Docker image
-      run: docker build -f ToDoList/Dockerfile .
+      run: docker build -t todolist-app ./ToDoList
 
-    # Запуск unit-тестов внутри Docker-контейнера
+    # Запуск тестов в Docker-контейнере
     - name: Run tests in Docker container
-      run: |
-        docker run --rm $(docker build -q -f ToDoList/Dockerfile .) \
-        dotnet test /src/ToDoList.Tests/ToDoList.Tests.csproj \
-        --logger "console;verbosity=detailed"
-
+      run: docker run --rm todolist-app dotnet test /app/ToDoList.Tests/ToDoList.Tests.csproj --logger "console;verbosity=detailed"
