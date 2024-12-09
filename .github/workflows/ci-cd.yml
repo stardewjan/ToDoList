@@ -10,27 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Проверка исходного кода
     - name: Checkout code
       uses: actions/checkout@v3
 
+    # Установка .NET SDK версии 8
     - name: Setup .NET 8 SDK
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'  
 
-    - name: List files in repository
-      run: ls -R ./ToDoList
-
-    - name: Environment info
-      run: |
-        dotnet --info
-        uname -a
-
+    # Восстановление зависимостей
     - name: Restore dependencies
       run: dotnet restore ./ToDoList/ToDoList.sln
 
+    # Сборка проекта
     - name: Build project
-      run: dotnet build ./ToDoList/ToDoList.sln --no-restore --configuration Release
+      run: dotnet build ./ToDoList/ToDoList.sln --no-restore --configuration Debug
 
-    - name: Run tests with detailed logs
+    # Проверка содержимого тестовой папки
+    - name: Verify test build output
+      run: ls -R ./ToDoList.Tests/bin/Debug/net8.0
+
+    # Запуск тестов
+    - name: Run tests
       run: dotnet test ./ToDoList.Tests/ToDoList.Tests.csproj --no-build --logger "console;verbosity=detailed"
