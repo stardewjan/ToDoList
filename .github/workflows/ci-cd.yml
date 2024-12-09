@@ -16,7 +16,7 @@ jobs:
 
       # Сборка Docker-образа
       - name: Build Docker image
-        run: docker build -t todo-list-app:latest .
+        run: docker build -t todo-list-app:latest ./ToDoList
 
       # Запуск тестов внутри контейнера
       - name: Run tests
