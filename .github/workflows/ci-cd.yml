@@ -1,0 +1,33 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # Запускается при пуше в ветку main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Скачиваем код
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Устанавливаем .NET Core
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0'
+
+      # Восстанавливаем зависимости
+      - name: Restore dependencies
+        run: dotnet restore
+
+      # Собираем проект
+      - name: Build project
+        run: dotnet build --configuration Release
+
+      # Запускаем тесты
+      - name: Run tests
+        run: dotnet test
