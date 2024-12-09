@@ -18,11 +18,19 @@ jobs:
       with:
         dotnet-version: '8.0.x'  
 
+    - name: List files in repository
+      run: ls -R ./ToDoList
+
+    - name: Environment info
+      run: |
+        dotnet --info
+        uname -a
+
     - name: Restore dependencies
       run: dotnet restore ./ToDoList/ToDoList.sln
 
     - name: Build project
       run: dotnet build ./ToDoList/ToDoList.sln --no-restore --configuration Release
 
-    - name: Run tests
-      run: dotnet test ./ToDoList.Tests/ToDoList.Tests.csproj --no-build --verbosity normal
+    - name: Run tests with detailed logs
+      run: dotnet test ./ToDoList.Tests/ToDoList.Tests.csproj --no-build --logger "console;verbosity=detailed"
