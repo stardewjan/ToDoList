@@ -32,4 +32,4 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Push Docker image to Docker Hub
-      run: docker push todolist-app
+      run: docker push stardewjan/todolist:tagname
