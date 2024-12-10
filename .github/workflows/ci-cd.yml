@@ -32,4 +32,4 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Push Docker image to Docker Hub
-      run: docker push stardewjan/todolist:tagname
+      run: docker build -t ${{ secrets.DOCKER_USERNAME }}/todolist:${{ github.sha }} .
