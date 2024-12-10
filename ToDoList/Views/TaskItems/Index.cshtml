@@ -10,12 +10,20 @@
     <a asp-action="Create" class="btn btn-outline-primary me-2">Создать новую задачу</a>
 </p>
 
-<!-- Фильтрация задач -->
-<form method="get" asp-action="Index" class="mb-3">
+<!-- Форма для поиска -->
+<form method="get" asp-action="FilteredTasks" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="searchQuery" class="form-control" placeholder="Поиск по задаче" value="@Context.Request.Query["searchQuery"]" />
+        <button class="btn btn-outline-primary" type="submit">Поиск</button>
+    </div>
+</form>
+
+<!-- Форма для фильтрации по статусу -->
+<form method="get" asp-action="FilteredTasks" class="mb-3">
     <div class="btn-group" role="group" aria-label="Фильтрация">
-        <a href="@Url.Action("Index", new { filterStatus = "completed" })" class="btn btn-outline-success">Выполненные</a>
-        <a href="@Url.Action("Index", new { filterStatus = "notcompleted" })" class="btn btn-outline-warning">Не выполненные</a>
-        <a href="@Url.Action("Index", new { filterStatus = "" })" class="btn btn-outline-secondary">Сбросить фильтр</a>
+        <a href="@Url.Action("FilteredTasks", new { filterStatus = "completed" })" class="btn btn-outline-success">Выполненные</a>
+        <a href="@Url.Action("FilteredTasks", new { filterStatus = "notcompleted" })" class="btn btn-outline-warning">Не выполненные</a>
+        <a href="@Url.Action("FilteredTasks", new { filterStatus = "" })" class="btn btn-outline-secondary">Сбросить фильтр</a>
     </div>
 </form>
 

@@ -49,6 +49,38 @@ namespace ToDoList.Controllers
         }
 
         /// <summary>
+        /// Получить список задач с фильтрацией по статусу и строке поиска.
+        /// </summary>
+        /// <param name="filterStatus">Статус задач для фильтрации (completed или notcompleted).</param>
+        /// <param name="searchQuery">Строка для поиска по названию или описанию задачи.</param>
+        /// <returns>Список отфильтрованных задач.</returns>
+        [HttpGet("filtered")]
+        [SwaggerOperation(Summary = "Получить задачи с фильтрацией", Description = "Возвращает задачи с возможностью фильтрации по статусу и строке поиска.")]
+        [SwaggerResponse(200, "Задачи успешно получены.", typeof(IEnumerable<TaskItem>))]
+        public async Task<IActionResult> GetFilteredTaskItems(string filterStatus, string searchQuery)
+        {
+            // Начинаем с всех задач
+            var tasks = _db.TaskItems.AsQueryable();
+
+            // Фильтрация по статусу
+            if (!string.IsNullOrEmpty(filterStatus))
+            {
+                bool isCompleted = filterStatus.ToLower() == "completed";
+                tasks = tasks.Where(t => t.IsCompleted == isCompleted);
+            }
+
+            // Фильтрация по строке поиска
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                tasks = tasks.Where(t => t.Title.Contains(searchQuery) || t.Description.Contains(searchQuery));
+            }
+
+            var filteredTasks = await tasks.ToListAsync();
+
+            return Ok(filteredTasks);
+        }
+
+        /// <summary>
         /// Создать новую задачу.
         /// </summary>
         /// <param name="taskItem">Данные задачи.</param>

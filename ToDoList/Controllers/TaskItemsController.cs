@@ -20,18 +20,33 @@ namespace ToDoList.Controllers
         }
 
         // GET: TaskItems
-        public async Task<IActionResult> Index(string filterStatus)
+        public async Task<IActionResult> Index()
         {
-            var tasks = from t in _context.TaskItems
-                        select t;
+            var tasks = await _context.TaskItems.ToListAsync();
+            return View(tasks);
+        }
 
+        // Метод для фильтрации задач
+        public async Task<IActionResult> FilteredTasks(string filterStatus, string searchQuery)
+        {
+            var tasks = _context.TaskItems.AsQueryable();
+
+            // Фильтрация по статусу
             if (!string.IsNullOrEmpty(filterStatus))
             {
-                bool isCompleted = filterStatus == "completed"; // Фильтрация по статусу
+                bool isCompleted = filterStatus.ToLower() == "completed";
                 tasks = tasks.Where(t => t.IsCompleted == isCompleted);
             }
 
-            return View(await tasks.ToListAsync());
+            // Фильтрация по строке поиска
+            if (!string.IsNullOrEmpty(searchQuery))
+            {
+                tasks = tasks.Where(t => t.Title.Contains(searchQuery) || t.Description.Contains(searchQuery));
+            }
+
+            // Получаем отфильтрованные задачи
+            var taskList = await tasks.ToListAsync();
+            return View("Index", taskList); // Возвращаем представление с отфильтрованными задачами
         }
 
         // GET: TaskItems/Details/5

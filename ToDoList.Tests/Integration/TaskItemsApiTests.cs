@@ -145,5 +145,81 @@ namespace ToDoList.Tests
             Assert.NotNull(updatedTask.EndDate); // Дата завершения должна быть установлена
         }
 
+        [Fact]
+        public async Task GetFilteredTasks_ByStatusAndSearchQuery_ShouldReturnFilteredTasks()
+        {
+            // Удаляем старые тестовые задачи, если они есть
+            await DeleteAllTestTasks();
+
+            // Arrange: Создаем только необходимые для теста задачи
+            var task1 = await CreateTestTask("Test Task 1", false); // Не завершена
+            var task2 = await CreateTestTask("Completed Task 2", true); // Завершена
+            var task3 = await CreateTestTask("Test Task 3", false); // Не завершена
+
+            // Act: Отправляем запрос с фильтрацией
+            var response = await _client.GetAsync("/api/TaskItemsApi/filtered?filterStatus=completed&searchQuery=task 2");
+
+            // Assert: Проверяем, что задача с нужным статусом и названием вернулась
+            var tasks = await response.Content.ReadFromJsonAsync<List<TaskItem>>();
+            Assert.Single(tasks); // Ожидаем, что вернется только одна задача
+            Assert.True(tasks[0].IsCompleted); // Задача должна быть завершена
+            Assert.Contains("task 2", tasks[0].Title.ToLower()); // Проверяем, что задача соответствует поисковому запросу
+        }
+
+        // Метод для удаления всех тестовых задач
+        private async Task DeleteAllTestTasks()
+        {
+            var tasks = await _client.GetAsync("/api/TaskItemsApi");
+            var taskList = await tasks.Content.ReadFromJsonAsync<List<TaskItem>>();
+            foreach (var task in taskList)
+            {
+                // Удаляем все задачи, которые были созданы для теста
+                await _client.DeleteAsync($"/api/TaskItemsApi/{task.Id}");
+            }
+        }
+
+        // Вспомогательный метод для создания задачи с уникальными данными
+        private async Task<TaskItem> CreateTestTask(string title, bool isCompleted)
+        {
+            var newTask = new TaskItem
+            {
+                Title = title,
+                Description = "Test Description",
+                IsCompleted = isCompleted
+            };
+            var response = await _client.PostAsJsonAsync("/api/TaskItemsApi", newTask);
+            return await response.Content.ReadFromJsonAsync<TaskItem>();
+        }
+
+        [Fact]
+        public async Task GetTaskItem_WithInvalidId_ShouldReturnNotFound()
+        {
+            // Act: Отправляем GET-запрос с несуществующим ID
+            var response = await _client.GetAsync("/api/TaskItemsApi/9999"); // Предположим, что задачи с таким ID нет
+
+            // Assert: Проверяем, что API вернул статус 404 NotFound
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task CreateTaskItem_WithInvalidData_ShouldReturnBadRequest()
+        {
+            // Arrange: Создаем новую задачу без обязательного поля "Title"
+            var newTask = new TaskItem
+            {
+                Title = "", // Пустой заголовок
+                Description = "Test Description",
+                IsCompleted = false
+            };
+
+            // Act: Отправляем POST-запрос для создания задачи с некорректными данными
+            var response = await _client.PostAsJsonAsync("/api/TaskItemsApi", newTask);
+
+            // Assert: Проверяем, что ответ содержит статус BadRequest
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+
+
     }
 }
