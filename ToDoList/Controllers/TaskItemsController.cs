@@ -20,9 +20,18 @@ namespace ToDoList.Controllers
         }
 
         // GET: TaskItems
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string filterStatus)
         {
-            return View(await _context.TaskItems.ToListAsync());
+            var tasks = from t in _context.TaskItems
+                        select t;
+
+            if (!string.IsNullOrEmpty(filterStatus))
+            {
+                bool isCompleted = filterStatus == "completed"; // Фильтрация по статусу
+                tasks = tasks.Where(t => t.IsCompleted == isCompleted);
+            }
+
+            return View(await tasks.ToListAsync());
         }
 
         // GET: TaskItems/Details/5
@@ -111,7 +120,7 @@ namespace ToDoList.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Details), new { id = taskItem.Id });
             }
             return View(taskItem);
         }
@@ -152,6 +161,23 @@ namespace ToDoList.Controllers
         private bool TaskItemExists(int id)
         {
             return _context.TaskItems.Any(e => e.Id == id);
+        }
+
+        // POST: TaskItems/CompleteTask/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteTask(int id)
+        {
+            var taskItem = await _context.TaskItems.FindAsync(id);
+            if (taskItem == null)
+            {
+                return NotFound();
+            }
+
+            taskItem.IsCompleted = true; // Обновляем статус на "Выполнено"
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = taskItem.Id });
         }
     }
 }

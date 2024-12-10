@@ -19,6 +19,12 @@
         </span>
     </p>
     <div class="mt-4">
+        @if (!Model.IsCompleted)
+        {
+            <form asp-action="CompleteTask" asp-route-id="@Model.Id" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-success me-2" style="max-width: 200px; width: 100%;">Завершить</button>
+            </form>
+        }
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary me-2" style="max-width: 200px; width: 100%;">Редактировать</a>
         <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger" style="max-width: 200px; width: 100%;">Удалить</a>
         <a asp-action="Index" class="btn btn-outline-secondary" style="max-width: 200px; width: 100%;">Назад</a>

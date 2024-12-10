@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ToDoList.Data.DatabaseContext;
 using ToDoList.Models;
 
 namespace ToDoList.Controllers
@@ -8,14 +10,28 @@ namespace ToDoList.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        private readonly ToDoListDbContext _context;
+
+        public HomeController(ILogger<HomeController> logger, ToDoListDbContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var totalTasks = await _context.TaskItems.CountAsync(); // Общее количество задач
+            var completedTasks = await _context.TaskItems.CountAsync(t => t.IsCompleted); // Количество выполненных задач
+            var notCompletedTasks = totalTasks - completedTasks; // Количество невыполненных задач
+
+            var statistics = new
+            {
+                TotalTasks = totalTasks,
+                CompletedTasks = completedTasks,
+                NotCompletedTasks = notCompletedTasks
+            };
+
+            return View(statistics); // Возвращаем статистику в представление
         }
 
         public IActionResult Privacy()
@@ -28,5 +44,6 @@ namespace ToDoList.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
     }
 }

@@ -121,5 +121,29 @@ namespace ToDoList.Controllers
         {
             return _db.TaskItems.Any(e => e.Id == id);
         }
+
+        /// <summary>
+        /// Завершить задачу.
+        /// </summary>
+        /// <param name="id">Идентификатор задачи.</param>
+        /// <returns>Обновлённая задача.</returns>
+        [HttpPost("{id}/complete")]
+        [SwaggerOperation(Summary = "Завершить задачу", Description = "Обновляет задачу, устанавливая статус 'Выполнено'.")]
+        [SwaggerResponse(200, "Задача успешно завершена.", typeof(TaskItem))]
+        [SwaggerResponse(404, "Задача не найдена.")]
+        public async Task<IActionResult> CompleteTask(int id)
+        {
+            var taskItem = await _db.TaskItems.FindAsync(id);
+            if (taskItem == null)
+            {
+                return NotFound();
+            }
+
+            taskItem.IsCompleted = true; // Обновляем статус на "Выполнено"
+            await _db.SaveChangesAsync();
+
+            return Ok(taskItem); // Возвращаем обновленную задачу
+        }
+
     }
 }

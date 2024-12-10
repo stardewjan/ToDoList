@@ -1,8 +1,42 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model dynamic
+
+@{
+    ViewData["Title"] = "Статистика по задачам";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center rounded-top">
+                    <h4 class="fw-bold mb-0">Статистика по задачам</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-5">
+                        <!-- Общее количество задач -->
+                        <div class="stat-item text-center">
+                            <h5 class="stat-title mb-3 text-muted">Общее количество задач</h5>
+                            <p class="stat-value display-4 fw-bold mb-0 text-primary">@Model.TotalTasks</p>
+                        </div>
+                        <!-- Выполненные задачи -->
+                        <div class="stat-item text-center">
+                            <h5 class="stat-title mb-3 text-muted">Выполненные задачи</h5>
+                            <p class="stat-value text-success display-4 fw-bold mb-0">@Model.CompletedTasks</p>
+                        </div>
+                        <!-- Не выполненные задачи -->
+                        <div class="stat-item text-center">
+                            <h5 class="stat-title mb-3 text-muted">Не выполненные задачи</h5>
+                            <p class="stat-value text-warning display-4 fw-bold mb-0">@Model.NotCompletedTasks</p>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="@Url.Action("Index", "TaskItems")" class="btn btn-lg btn-outline-primary px-4 py-2 rounded-pill">
+                            Перейти к списку задач
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

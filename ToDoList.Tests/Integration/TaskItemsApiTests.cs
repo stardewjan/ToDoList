@@ -126,5 +126,22 @@ namespace ToDoList.Tests
             var response = await _client.PostAsJsonAsync("/api/TaskItemsApi", newTask);
             return await response.Content.ReadFromJsonAsync<TaskItem>();
         }
+
+        // Тестирование завершения задачи
+        [Fact]
+        public async Task CompleteTask_WithValidId_ShouldReturnUpdatedTask()
+        {
+            // Arrange: Создаем тестовую задачу для завершения
+            var newTask = await CreateTestTask();
+
+            // Act: Отправляем POST-запрос для завершения задачи
+            var response = await _client.PostAsync($"/api/TaskItemsApi/{newTask.Id}/complete", null);
+            var updatedTask = await response.Content.ReadFromJsonAsync<TaskItem>();
+
+            // Assert: Проверяем, что задача была успешно завершена
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode); // Статус должен быть OK
+            Assert.NotNull(updatedTask); // Задача не должна быть null
+            Assert.True(updatedTask.IsCompleted); // Статус задачи должен быть "Выполнено"
+        }
     }
 }
