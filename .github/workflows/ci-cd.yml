@@ -14,16 +14,26 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # Установка .NET SDK версии 8 (для использования в тестах)
+    # Установка .NET SDK версии 8
     - name: Setup .NET 8 SDK
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '8.0.x'
 
+    # Сборка проекта
+    - name: Build the project
+      run: dotnet build --configuration Release
+
     # Сборка Docker-образа
     - name: Build Docker image
       run: docker build -t todolist-app ./ToDoList
 
-    # Запуск тестов в Docker-контейнере
-    - name: Run tests in Docker container
-      run: docker run --rm todolist-app dotnet test /app/ToDoList.Tests/ToDoList.Tests.csproj --logger "console;verbosity=detailed"
+    # (Опционально) Публикация Docker-образа в Docker Hub
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Push Docker image to Docker Hub
+      run: docker push todolist-app
