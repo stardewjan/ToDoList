@@ -20,10 +20,6 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
-    # Сборка проекта
-    - name: Build the project
-      run: dotnet build --configuration Release
-
     # Сборка Docker-образа
     - name: Build Docker image
       run: docker build -t todolist-app ./ToDoList
