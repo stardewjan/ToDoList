@@ -155,6 +155,7 @@ namespace ToDoList.Controllers
             }
 
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
@@ -175,6 +176,8 @@ namespace ToDoList.Controllers
             }
 
             taskItem.IsCompleted = true; // Обновляем статус на "Выполнено"
+            taskItem.EndDate = DateTime.Now;
+
             await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Details), new { id = taskItem.Id });

@@ -58,7 +58,7 @@ namespace ToDoList.Tests
             {
                 Title = "Test Task",
                 Description = "Test Description",
-                EndDate = DateTime.Now.AddDays(1),
+                //EndDate = DateTime.Now.AddDays(1),
                 IsCompleted = false
             };
 
@@ -119,7 +119,7 @@ namespace ToDoList.Tests
             {
                 Title = "Test Task",
                 Description = "Test Description",
-                EndDate = DateTime.Now.AddDays(1),
+                //EndDate = DateTime.Now.AddDays(1),
                 IsCompleted = false
             };
 
@@ -142,6 +142,8 @@ namespace ToDoList.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode); // Статус должен быть OK
             Assert.NotNull(updatedTask); // Задача не должна быть null
             Assert.True(updatedTask.IsCompleted); // Статус задачи должен быть "Выполнено"
+            Assert.NotNull(updatedTask.EndDate); // Дата завершения должна быть установлена
         }
+
     }
 }

@@ -28,7 +28,10 @@
                 <p class="mb-0 text-muted">@item.Description</p>
             </div>
             <div class="text-end">
-                <small class="text-muted">@item.EndDate.ToString("dd.MM.yyyy")</small>
+                @if (item.EndDate.HasValue)
+                {
+                    <small class="text-muted">@item.EndDate.Value.ToString("dd.MM.yyyy")</small>
+                }
                 <span class="badge @((item.IsCompleted ? "bg-success" : "bg-warning")) ms-2">
                     @(item.IsCompleted ? "Выполнено" : "Не выполнено")
                 </span>

@@ -140,6 +140,8 @@ namespace ToDoList.Controllers
             }
 
             taskItem.IsCompleted = true; // Обновляем статус на "Выполнено"
+            taskItem.EndDate = DateTime.Now;
+
             await _db.SaveChangesAsync();
 
             return Ok(taskItem); // Возвращаем обновленную задачу

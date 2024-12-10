@@ -9,9 +9,13 @@
     <p class="card-text">
         <strong>Описание:</strong> @Model.Description
     </p>
-    <p class="card-text">
-        <strong>Дата завершения:</strong> @Model.EndDate.ToString("dd.MM.yyyy")
-    </p>
+    @if (Model.EndDate.HasValue)
+    {
+        <p class="card-text">
+            <strong>Дата завершения:</strong> @Model.EndDate.Value.ToString("dd.MM.yyyy")
+        </p>
+    }
+
     <p class="card-text">
         <strong>Статус:</strong>
         <span class="badge @((Model.IsCompleted ? "bg-success" : "bg-warning"))">
